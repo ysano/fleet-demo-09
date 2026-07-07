@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Orders API
-  version: "1.0.0"
+  version: "1.1.0"
 servers:
   - url: https://api.example.internal/orders/v1
 paths:
@@ -61,3 +61,5 @@ components:
           type: string
         quantity:
           type: integer
+        note:
+          type: string
