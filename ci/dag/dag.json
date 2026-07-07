@@ -1,0 +1,48 @@
+{
+  "milestone": null,
+  "total_issues": 3,
+  "nodes_with_edges": [
+    "ysano/fleet-demo-09#3",
+    "ysano/fleet-demo-09#4",
+    "ysano/fleet-demo-09#5"
+  ],
+  "edges": [
+    {
+      "from": "ysano/fleet-demo-09#4",
+      "to": "ysano/fleet-demo-09#5",
+      "kind": "depends_on"
+    },
+    {
+      "from": "ysano/fleet-demo-09#3",
+      "to": "ysano/fleet-demo-09#4",
+      "kind": "depends_on"
+    }
+  ],
+  "cycles": [],
+  "epics": [],
+  "cross_repo": true,
+  "critical_path": {
+    "path": [
+      "ysano/fleet-demo-09#3",
+      "ysano/fleet-demo-09#4",
+      "ysano/fleet-demo-09#5"
+    ],
+    "length": 3,
+    "has_cycle": false
+  },
+  "sync_waves": [
+    {
+      "node": "ysano/fleet-demo-09#3",
+      "wave": 0
+    },
+    {
+      "node": "ysano/fleet-demo-09#4",
+      "wave": 1
+    },
+    {
+      "node": "ysano/fleet-demo-09#5",
+      "wave": 2
+    }
+  ],
+  "mode": "cross"
+}
