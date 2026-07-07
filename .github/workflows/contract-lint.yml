@@ -1,0 +1,23 @@
+# dev-contracts scaffold (role=control): 契約 lint ゲート。
+# Spectral で contracts/**/openapi.y*ml を .spectral.yaml ruleset に照らし、error 級で fail。
+# ルールの根拠は contract-governance skill §3 / references/breaking-changes.md 末尾。
+name: contract-lint
+on:
+  pull_request:
+    paths:
+      - 'contracts/**'
+      - '.spectral.yaml'
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Spectral lint
+        run: |
+          npx --yes @stoplight/spectral-cli@6 lint \
+            "contracts/**/openapi.yaml" "contracts/**/openapi.yml" \
+            --ruleset .spectral.yaml \
+            --fail-severity error

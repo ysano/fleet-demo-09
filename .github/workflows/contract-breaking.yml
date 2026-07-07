@@ -1,0 +1,32 @@
+# dev-contracts scaffold (role=control): 破壊的変更検出ゲート。
+# 契約 PR で base ブランチとの diff を oasdiff で比較し、破壊的変更（ERR）があれば PR を fail させる。
+#
+# 関所 philosophy: 破壊は「常に止める」。意図的な破壊的変更を land するには (a) contracts の
+# info.version を MAJOR bump し、(b) maintainer が失敗チェックを承認/override する（branch
+# protection の admin override 等）。自己申告の MAJOR bump で auto-pass はしない — 並列 consumer を
+# 未承認の破壊から止めるのが関所の目的（規約は contract-governance skill §2）。consumer は自 repo の
+# .contracts-lock.yaml で pin するため、二重防護になる。
+#
+# 版 pin: 公式 action を tag 固定して破壊判定の再現性を保つ（未 pin の latest は判定が将来変わる）。
+# NOTE(#1321): reusable workflow 配布が整えば `uses:` 参照へ差し替える薄い層。
+# NOTE: 単一の主要契約を想定。複数契約 repo は本 job を matrix 化し contracts/<name>/openapi.yaml
+#       ごとに base/revision を差し替える。
+name: contract-breaking-change
+on:
+  pull_request:
+    paths:
+      - 'contracts/**/openapi.yaml'
+      - 'contracts/**/openapi.yml'
+jobs:
+  breaking:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0            # base の契約を git ref で解決するため全履歴が要る
+      - name: oasdiff breaking (base vs PR)
+        uses: oasdiff/oasdiff-action/breaking@v0.0.47   # tag pin（破壊判定の再現性）
+        with:
+          base: 'origin/${{ github.base_ref }}:contracts/orders-api/openapi.yaml'
+          revision: 'contracts/orders-api/openapi.yaml'
+          fail-on: 'ERR'          # これが無いと oasdiff は検出しても exit 0（#1379 実 CI 実証）

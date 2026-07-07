@@ -1,0 +1,32 @@
+# dev-contracts scaffold (role=control): Spectral ruleset。
+# spectral:oas を継承し、「欠けると破壊検出 or consumer 実装が壊れる」ものだけ error に引き上げる。
+# スタイル系は warn 据え置き（gate をブロッカーにしすぎない）。根拠は contract-governance skill §3。
+extends:
+  - "spectral:oas"
+rules:
+  # 組み込みルールの severity を error へ引き上げ
+  operation-operationId: error        # consumer コード生成 / pin 追跡の安定識別子
+  operation-success-response: error   # 2xx/3xx の成功応答定義を必須化（暗黙の空応答を禁止）
+
+  # カスタムルール
+  contract-info-version:
+    description: "info.version は必須（契約自身の semver）。"
+    given: "$.info"
+    severity: error
+    then:
+      field: version
+      function: truthy
+  contract-operation-summary:
+    description: "全 operation に summary を必須化（契約 PR レビューの可読性）。"
+    given: "$.paths[*][get,put,post,delete,patch,options,head]"
+    severity: error
+    then:
+      field: summary
+      function: truthy
+  contract-servers-defined:
+    description: "servers を必須化（consumer の baseURL 解決を確定）。"
+    given: "$"
+    severity: error
+    then:
+      field: servers
+      function: truthy
