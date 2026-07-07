@@ -1,0 +1,33 @@
+# devops scaffold (role=distributor): 統制 repo が配布する reusable workflow。
+# caller は `uses: ysano/fleet-demo-09/.github/workflows/reusable-ci.yml@v1` で参照する。
+# CI 中身は実 stack（Python）に置換済み。構造契約（workflow_call / permissions 最小 / secrets 明示）は
+# テンプレのまま不変（reusable-workflows skill §1-§4）。
+name: reusable-ci
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        type: string
+        required: false
+        default: "3.12"
+    secrets:
+      EXTRA_TOKEN:
+        required: false          # 明示宣言（secrets: inherit しない）
+
+permissions:
+  contents: read                 # 基線は最小。書込/OIDC は必要な job のみ昇格
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: Compile & smoke
+        env:
+          EXTRA_TOKEN: ${{ secrets.EXTRA_TOKEN }}
+        run: |
+          python -m py_compile src/app.py
+          python src/app.py
