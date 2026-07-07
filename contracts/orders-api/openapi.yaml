@@ -55,9 +55,11 @@ components:
           type: integer
     OrderCreate:
       type: object
-      required: [item, quantity]
+      required: [item, quantity, customerId]
       properties:
         item:
           type: string
         quantity:
           type: integer
+        customerId:
+          type: string
